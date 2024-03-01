@@ -1,0 +1,53 @@
+   how to send and verify otp 
+		make sure you are using version of  npm install firebase@8.6.8
+1...Create acccount and project on firebase
+2...select name on firebase and copy code 
+3..make firebase.js in src folder add this code
+
+import firebase from 'firebase'
+const config ={
+
+    apiKey: "AIzaSyBAIbU3WgdgvmLV1U6GH-E6H2UTPYr7fTw",
+  authDomain: "umrah-ride-bbcba.firebaseapp.com",
+  projectId: "umrah-ride-bbcba",
+  storageBucket: "umrah-ride-bbcba.appspot.com",
+  messagingSenderId: "719159743497",
+  appId: "1:719159743497:web:8344a578d1aa80823d94d8"
+}
+firebase.initializeApp(config)
+export default firebase
+
+4..in console.firebase go to authentication and select phone authentication option
+5..get input from <phoneInput> and store it in Number state that is present in contextapi file
+6..import firebase from '../firebase'; import firebase.js file in context api file
+7..create function of handle handleClick that is call when user press get otp button
+8.. add this function in context api 
+    const handleClick =(e)=>{
+    e.preventDefault();
+    console.log(Number)
+    if(Number==null){
+        return message.error("Number Not Entered!")
+    }
+	//recaptcha container is the dive where recaptcha display                                                           
+    let recaptcha=new firebase.auth.RecaptchaVerifier("recaptcha-container")
+
+    
+        firebase.auth().signInWithPhoneNumber(Number,recaptcha).then(function(e){
+            let code=prompt('enter otp','');
+         if(code==null){
+             return message.error("code is not entered!")
+         }
+		//match the otp that user enter with the otp that is sent to user
+         e.confirm(code).then(function(result){
+                     console.log("Number Verified");
+                     console.log(result.user,'user');
+                     console.log(result.user.phoneNumber,'user');
+                     alert("congrats")
+              }).catch(function(error){console.log("enter correct otp") ; message.error("Enter Correct otp")})
+
+
+        }).catch(function(error){console.log(error); message.error("error in otp frontend")})
+
+   }
+9...onClick={() => handleClick("recaptcha-container")} 
+add give id in handleClick function call because it is used in handleClick function

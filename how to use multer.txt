@@ -1,0 +1,79 @@
+        how to use multer
+
+<input type="file" name="file" accept="image/*" onChange={handleFileChange} />
+<img height="100px" width="100px" src={imgURL} alt="here" />
+
+      const handleFileChange=(event)=>{
+    const file = event.target.files[0];
+    //  console.log(file)
+    const formData = new FormData();
+    formData.append('file', file);  
+    sendimg(formData);
+  }
+
+
+ const [imgURL, setimgURL] = useState(null)
+let host="http://localhost:8000/"
+
+
+
+//functionality for multer that send img path to server
+const sendimg=async(formData)=>{
+    try {
+        const response= await fetch('http://localhost:8000/api/upload',{
+            method:"POST",
+            body:formData,
+        })
+        const json= await response.json()
+        console.log(json.imagePath)
+        const imagePath = json.imagePath;
+
+        // it will return only img address like file-1705490407389.png we need http://localhost:8000/file-1705490407389.png that why we concatenate 
+        const completeImagePath = host + imagePath;  // Concatenate with host
+        console.log(completeImagePath)
+        setimgURL(completeImagePath);
+        
+
+    } catch (error) {
+        console.log("error in frontend sendimg")
+    }
+}
+
+
+
+
+				now for backend
+in index.js file
+
+npm i multer
+
+const multer = require("multer");
+const path = require("path"); // Make sure you have this line to import the 'path' module
+ 
+//code for multer setup and use and this is the folder where data like imgs store
+app.use("/", express.static("uploads"));
+// this is for name of each img store in uploads
+filename: (req, file, cb) => {
+    cb(
+      null,
+      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
+    );
+  },
+});
+
+// Create Multer instance
+const upload = multer({ storage });
+
+//this is the path that receive api request from frontend
+// Handle image upload
+app.post("/api/upload", upload.single("file"), (req, res) => {
+  try {
+    const imagePath = req.file.filename;
+    // Save imagePath to your database
+    console.log(imagePath + "ok");
+    // Respond with the imagePath
+    res.json({ imagePath });
+  } catch (error) {
+    console.error("Error uploading image:", error);
+  }
+});
