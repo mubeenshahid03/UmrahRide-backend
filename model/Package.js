@@ -14,6 +14,10 @@ const packageSchema= new mongoose.Schema({
         ref: "vehicles",
         required: true,
     },
+    price:{
+        type:String,
+        
+    }
 })
 
 const Package=mongoose.model('Package', packageSchema,"packages");
