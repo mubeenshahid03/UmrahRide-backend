@@ -120,7 +120,7 @@ router.get("/fetchallpackages", async (request, response) => {
             _id: pkg._id,
             title: pkg.title,
             description: pkg.description,
-            price: pkg.price, // Include price in the response
+            price: pkg.price, 
             vehicle,
             __v: pkg.__v,
           };
