@@ -95,6 +95,7 @@ router.post("/userbookings", fetchuser, async (request, response) => {
     // Iterate through each booking and fetch additional data
     const bookingsWithDetails = await Promise.all(
       bookings.map(async (booking) => {
+        console.log(booking)
         const destination = await Destination.findOne({
           _id: booking.destinationId,
         });
@@ -114,6 +115,7 @@ router.post("/userbookings", fetchuser, async (request, response) => {
           _id: booking._id,
           userid: booking.userid,
           datepicker: booking.datepicker,
+          timepicker: booking.timepicker ? booking.timepicker : null, 
           hotel_name: booking.hotel_name,
           flightno: booking.flightno,
           comments: booking.comments,

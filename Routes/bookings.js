@@ -9,15 +9,15 @@ const fetchuser = require("../Middleware/fetchuser");
 const Contacts = require("../model/Contacts");
 const Package = require("../model/Package");
 const Vehicle = require("../model/Vehicle");
+const moment = require("moment");
 
 //this route contain requests of bookings and contacts and packages
 
-// http://localhost:8000/api/bookings/addbooking
 router.post("/addbooking", fetchuser, async (request, response) => {
   try {
     console.log(request.body);
     const {
-      datepicker,
+      date_time,
       hotel_name,
       comments,
       vehicleId,
@@ -28,21 +28,25 @@ router.post("/addbooking", fetchuser, async (request, response) => {
       bookingstatus,
       flight_number,
     } = request.body.bookingInfo;
-    //request.user.id comming from fetchuser
+
     let userid = await User.findOne({ _id: request.user.id });
 
-    if (!datepicker || !comments) {
-      return response
-        .status(401)
-        .json({
-          error:
-            "complet data not received in http://localhost:8000/api/bookings/addbooking",
-        });
+    if (!date_time) {
+      return response.status(401).json({
+        error:
+          "complete data not received in http://localhost:8000/api/bookings/addbooking",
+      });
     }
+
+    // Parse the date and time using moment.js
+    const dateTimeMoment = moment(date_time);
+    const date = dateTimeMoment.format("YYYY-MM-DD");
+    const time = dateTimeMoment.format("HH:mm:ss");
 
     let booking = new Booking({
       userid,
-      datepicker,
+      datepicker: date,
+      timepicker: time,
       hotel_name,
       comments,
       destinationId,
@@ -59,6 +63,7 @@ router.post("/addbooking", fetchuser, async (request, response) => {
     console.log("error from backend /api/destination/addbooking" + error);
   }
 });
+
 
 // http://localhost:8000/api/bookings/deletebooking
 router.post("/deletebooking", fetchuser, async (request, response) => {
@@ -160,6 +165,9 @@ router.post("/addpkgbooking", fetchuser, async (request, response) => {
             "Complete data not received in http://localhost:8000/api/bookings/addbooking",
         });
     }
+    const dateTimeMoment = moment(datepicker);
+    const date = dateTimeMoment.format("YYYY-MM-DD");
+    const time = dateTimeMoment.format("HH:mm:ss");
 
     // Fetching user by id
     let user = await User.findById(request.user.id);
@@ -175,7 +183,8 @@ router.post("/addpkgbooking", fetchuser, async (request, response) => {
 
     let booking = new Booking({
       userid: user._id,
-      datepicker,
+      datepicker:date,
+      timepicker:time,
       price,
       isPackage,
       packageId: packageid,
